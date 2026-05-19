@@ -1,0 +1,22 @@
+# ============================================================
+# SmartShelf Monitor — Python Dependencies
+# ============================================================
+# IMPORTANT — Jetson Nano setup notes:
+#
+# 1. Create venv WITH system packages (to reuse Jetson's cv2 + onnxruntime):
+#    python3 -m venv --system-site-packages venv
+#    source venv/bin/activate
+#
+# 2. Then install only the packages below:
+#    pip install -r requirements.txt
+#
+# 3. cv2 (OpenCV) should come from the system:
+#    sudo apt-get install python3-opencv  (if not already installed)
+#
+# 4. onnxruntime is pre-installed on Jetson Nano JetPack images.
+#    If missing, download from: https://elinux.org/Jetson_Zoo#ONNX_Runtime
+#
+# ============================================================
+
+flask>=2.3.0
+numpy>=1.21.0

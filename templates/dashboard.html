@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShelfIQ — Retail Shelf Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── TOP NAV ──────────────────────────────────────────── -->
+  <nav class="topnav">
+    <div class="nav-left">
+      <div class="nav-logo">
+        <svg class="logo-icon" viewBox="0 0 28 28" fill="none">
+          <rect x="2"  y="6"  width="24" height="3.5" rx="1.5" fill="currentColor"/>
+          <rect x="2"  y="12" width="24" height="3.5" rx="1.5" fill="currentColor" opacity=".6"/>
+          <rect x="2"  y="18" width="24" height="3.5" rx="1.5" fill="currentColor" opacity=".3"/>
+          <circle cx="8"  cy="7.75"  r="1.1" fill="white"/>
+          <circle cx="14" cy="7.75"  r="1.1" fill="white"/>
+          <circle cx="20" cy="7.75"  r="1.1" fill="white"/>
+          <circle cx="8"  cy="13.75" r="1.1" fill="white"/>
+          <circle cx="14" cy="13.75" r="1.1" fill="white"/>
+        </svg>
+        <div class="logo-text">
+          <span class="logo-name">ShelfIQ</span>
+          <span class="logo-tagline">Retail Shelf Intelligence · DATA 690</span>
+        </div>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-location">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <span>Store — Camera 01</span>
+        <span class="live-badge" id="live-badge">● LIVE</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-stat">
+        <span class="nav-stat-label">Uptime</span>
+        <span class="nav-stat-val" id="nav-uptime">00:00:00</span>
+      </div>
+      <div class="nav-stat">
+        <span class="nav-stat-label">CPU Temp</span>
+        <span class="nav-stat-val" id="nav-temp">—</span>
+      </div>
+      <div class="nav-stat">
+        <span class="nav-stat-label">Inference</span>
+        <span class="nav-stat-val" id="nav-fps">— fps</span>
+      </div>
+      <div class="conn-chip" id="conn-chip">
+        <span class="conn-dot" id="conn-dot"></span>
+        <span id="conn-label">Connecting…</span>
+      </div>
+      <button class="btn-snapshot" id="btn-snapshot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M2 8.5C2 7.12 3.12 6 4.5 6H6l1.5-2h9L18 6h1.5C20.88 6 22 7.12 22 8.5v10c0 1.38-1.12 2.5-2.5 2.5h-15C3.12 21 2 19.88 2 18.5v-10z" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        Save Snapshot
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── ALERT STRIP ──────────────────────────────────────── -->
+  <div class="alert-strip hidden" id="alert-strip">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8"/>
+      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    </svg>
+    <span id="alert-text">Initializing…</span>
+  </div>
+
+  <!-- ── MAIN LAYOUT ──────────────────────────────────────── -->
+  <div class="page-body" id="page-body">
+
+    <!-- ════════════════ LEFT: CAMERA ONLY ════════════════ -->
+    <div class="col-left">
+
+      <!-- Camera label bar -->
+      <div class="cam-label-bar">
+        <span class="cam-label-title">Live Detection Feed</span>
+        <div class="cam-label-right">
+          <span class="recording-dot"></span>
+          <span class="recording-label">Recording</span>
+        </div>
+      </div>
+
+      <!-- Camera card — fills all remaining height -->
+      <div class="feed-card">
+        <div class="feed-viewport">
+          <img id="cam-stream" src="/video_feed" alt="Live shelf detection feed" />
+        </div>
+
+        <!-- Compact footer strip -->
+        <div class="feed-footer">
+          <div class="feed-meta-item">
+            <span class="fmi-label">Frame rate</span>
+            <span class="fmi-val" id="feed-fps">—</span>
+          </div>
+          <div class="feed-meta-sep"></div>
+          <div class="feed-meta-item">
+            <span class="fmi-label">Resolution</span>
+            <span class="fmi-val">640 × 480</span>
+          </div>
+          <div class="feed-meta-sep"></div>
+          <div class="feed-meta-item">
+            <span class="fmi-label">Detections</span>
+            <span class="fmi-val" id="feed-items">—</span>
+          </div>
+          <div class="feed-meta-sep"></div>
+          <div class="feed-meta-item">
+            <span class="fmi-label">Model</span>
+            <span class="fmi-val">YOLOv8 · ONNX</span>
+          </div>
+          <div class="feed-meta-sep"></div>
+          <div class="feed-meta-item">
+            <span class="fmi-label">Device</span>
+            <span class="fmi-val">Jetson Nano</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════ RIGHT: ALL ANALYTICS ════════════════ -->
+    <div class="col-right">
+
+      <!-- ── Status Hero Card ─────────────────────────────── -->
+      <div class="status-hero" id="status-card">
+        <div class="sh-left">
+          <div class="sh-status" id="ss-label">Loading…</div>
+          <div class="sh-detail" id="ss-detail">Initializing system</div>
+        </div>
+        <div class="sh-right">
+          <div class="sh-pct" id="ss-pct">—%</div>
+          <div class="sh-pct-sub">occupancy</div>
+        </div>
+        <div class="sh-bar-track">
+          <div class="sh-bar-fill" id="ss-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- ── 4-stat horizontal strip ──────────────────────── -->
+      <div class="stat-strip">
+        <div class="stat-strip-item">
+          <div class="ssi-value" id="kv-occ">—%</div>
+          <div class="ssi-label">Occupancy</div>
+        </div>
+        <div class="stat-strip-div"></div>
+        <div class="stat-strip-item">
+          <div class="ssi-value" id="kv-items">—</div>
+          <div class="ssi-label">Items Detected</div>
+        </div>
+        <div class="stat-strip-div"></div>
+        <div class="stat-strip-item">
+          <div class="ssi-value" id="kv-empty">—</div>
+          <div class="ssi-label">Empty Zones</div>
+        </div>
+        <div class="stat-strip-div"></div>
+        <div class="stat-strip-item">
+          <div class="ssi-value" id="kv-fps">—</div>
+          <div class="ssi-label">System FPS</div>
+        </div>
+      </div>
+
+      <!-- ── Zone Map ─────────────────────────────────────── -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">Zone Availability Map</span>
+          <div class="legend">
+            <span class="leg-item"><span class="leg-swatch leg-green"></span>Stocked</span>
+            <span class="leg-item"><span class="leg-swatch leg-red"></span>Empty</span>
+          </div>
+        </div>
+        <div class="zone-grid" id="zone-grid"></div>
+        <div class="zone-summary" id="zone-summary">Loading zone data…</div>
+      </div>
+
+      <!-- ── Row Performance ──────────────────────────────── -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">Row Performance</span>
+          <span class="card-hd-sub">{{ grid_rows }} rows · {{ grid_cols }} zones</span>
+        </div>
+        <table class="perf-table">
+          <thead>
+            <tr>
+              <th>Row</th>
+              <th>Stocked</th>
+              <th>Fill rate</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="row-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- ── Occupancy Trend ──────────────────────────────── -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">Occupancy Trend</span>
+          <span class="card-hd-sub">Last 60 s</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="trend-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- ── Restock Recommendations ──────────────────────── -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">Restock Recommendations</span>
+          <span class="restock-count badge-neutral" id="restock-count">0 items</span>
+        </div>
+        <div id="restock-list">
+          <div class="empty-state">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="1.8"/>
+              <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            All zones are adequately stocked
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Event Log ────────────────────────────────────── -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">Event Log</span>
+          <button class="btn-ghost-sm" id="btn-clear-log">Clear all</button>
+        </div>
+        <div class="event-log" id="event-log">
+          <div class="empty-state">Waiting for system events…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-host"></div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>
